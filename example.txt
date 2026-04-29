@@ -4,7 +4,6 @@ import "fmt"
 func main(){
 	k := 10
 	for i := 0; i < 10; i++{
-		fmt.Println(i)
+		k = k + 1
 	}
-	fmt.Println(k)
 }
