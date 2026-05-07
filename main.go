@@ -25,6 +25,7 @@ func main() {
 	m := make(map[any]any)
 
 	ast.Inspect(node, func(node ast.Node) bool {
+
 		switch x := node.(type) {
 		case *ast.DeclStmt:
 			m[x.Decl] = nil
