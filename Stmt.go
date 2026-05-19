@@ -76,12 +76,10 @@ func ForStatement(x *ast.ForStmt, m map[any]any) string {
 	return x.Init.(*ast.AssignStmt).Rhs[0].(*ast.BasicLit).Value
 }
 
-func AssignmentStatement(x *ast.AssignStmt, m map[any]any) []string {
-	var result []string
+func AssignmentStatement(x *ast.AssignStmt, m map[any]any) {
 	for lhs := range x.Lhs {
 		rhs := x.Rhs[lhs]
 		v := Expression(rhs, m)
-		result = append(result, v)
+		m[Expression(x.Lhs[lhs], m)] = v
 	}
-	return result
 }

@@ -45,11 +45,14 @@ func main() {
 		// 		m[x.Lhs[lhs].(*ast.Ident).Name] = x.Rhs[lhs].(*ast.BasicLit).Value
 		// 	}
 		// }
-		case ast.Expr:
-			Expression(x, m)
+		// case ast.Expr:
+		// 	v := Expression(x, m)
+		// 	m[Expression(x, m)] = v
 		case *ast.ForStmt:
 			v := ForStatement(x, m)
 			m[x] = v
+		case *ast.AssignStmt:
+			AssignmentStatement(x, m)
 		}
 		return true
 
