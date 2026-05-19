@@ -27,7 +27,10 @@ func BinaryExpression(x *ast.BinaryExpr, m map[any]any) string {
 	z := Expression(x.Y, m)
 	i, err := strconv.Atoi(y)
 	if err != nil {
+		// fmt.Printf("Looking for key: '%v' (type: %T)\n", y, y)
+		// fmt.Printf("Current map contents: %#v\n", m)
 		k := m[y]
+		// fmt.Println(k)
 		q, ok := k.(string)
 		if ok == false {
 			return "error in k/y"

@@ -46,8 +46,7 @@ func main() {
 		// 	}
 		// }
 		case ast.Expr:
-			v := Expression(x, m)
-			m[x] = v
+			Expression(x, m)
 		case *ast.ForStmt:
 			v := ForStatement(x, m)
 			m[x] = v
