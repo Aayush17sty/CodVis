@@ -27,6 +27,9 @@ func main() {
 	ast.Inspect(node, func(node ast.Node) bool {
 
 		switch x := node.(type) {
+		case *ast.BinaryExpr:
+			v := BinaryExpression(x, m)
+			m[x] = v
 		case *ast.ForStmt:
 			v, c := ForStatement(x, m)
 			m[x] = v
@@ -42,6 +45,9 @@ func main() {
 			}
 		case *ast.AssignStmt:
 			AssignmentStatement(x, m)
+		case *ast.IfStmt:
+			v, _ := IfStatement(x, m)
+			m[x] = v
 		}
 		return true
 

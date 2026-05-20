@@ -94,3 +94,7 @@ func AssignmentStatement(x *ast.AssignStmt, m map[any]any) {
 func Statement(x ast.Stmt, m map[any]any) {
 	AssignmentStatement(x.(*ast.AssignStmt), m)
 }
+
+func IfStatement(x *ast.IfStmt, m map[any]any) (string, string) {
+	return x.Init.(*ast.AssignStmt).Rhs[0].(*ast.BasicLit).Value, Expression(x.Cond, m)
+}
