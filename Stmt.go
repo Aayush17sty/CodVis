@@ -27,10 +27,11 @@ func BinaryExpression(x *ast.BinaryExpr, m map[any]any) string {
 	z := Expression(x.Y, m)
 	i, err := strconv.Atoi(y)
 	if err != nil {
-		// fmt.Printf("Looking for key: '%v' (type: %T)\n", y, y)
-		// fmt.Printf("Current map contents: %#v\n", m)
 		k := m[y]
-		// fmt.Println(k)
+		if k == nil {
+			m[y] = z
+			k = z
+		}
 		q, ok := k.(string)
 		if ok == false {
 			return "error in k/y"
@@ -52,6 +53,9 @@ func BinaryExpression(x *ast.BinaryExpr, m map[any]any) string {
 		if x.Op == token.ASSIGN {
 			res = s
 		}
+		if x.Op == token.LSS {
+			res = j
+		}
 		p := strconv.Itoa(res)
 		return p
 	}
@@ -68,12 +72,16 @@ func BinaryExpression(x *ast.BinaryExpr, m map[any]any) string {
 	if x.Op == token.ASSIGN {
 		res = i
 	}
+	if x.Op == token.LSS {
+		res = j
+	}
 	p := strconv.Itoa(res)
 	return p
 }
 
-func ForStatement(x *ast.ForStmt, m map[any]any) string {
-	return x.Init.(*ast.AssignStmt).Rhs[0].(*ast.BasicLit).Value
+func ForStatement(x *ast.ForStmt, m map[any]any) (string, string) {
+	// print(Expression(x.Cond, m))
+	return x.Init.(*ast.AssignStmt).Rhs[0].(*ast.BasicLit).Value, Expression(x.Cond, m)
 }
 
 func AssignmentStatement(x *ast.AssignStmt, m map[any]any) {

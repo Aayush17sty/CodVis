@@ -7,6 +7,7 @@ import (
 	"go/token"
 	"log"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -49,17 +50,27 @@ func main() {
 		// 	v := Expression(x, m)
 		// 	m[Expression(x, m)] = v
 		case *ast.ForStmt:
-			v := ForStatement(x, m)
+			v, c := ForStatement(x, m)
 			m[x] = v
+			j, err := strconv.Atoi(c)
+			if err != nil {
+				return false
+			}
+			fmt.Println(j)
+			for i := 0; i < j; i++ {
+				for stmt := range x.Body.List {
+					Expression(x.Body.List[stmt].(ast.Expr), m)
+				}
+			}
+
 		case *ast.AssignStmt:
 			AssignmentStatement(x, m)
 		}
 		return true
 
 	})
-	for k, v := range m {
-		fmt.Printf("%v, %v", k, v)
-		fmt.Println()
-	}
-
+	// for k, v := range m {
+	// 	fmt.Printf("%v, %v", k, v)
+	// 	fmt.Println()
+	// }
 }
