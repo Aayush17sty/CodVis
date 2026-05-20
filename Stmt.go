@@ -80,7 +80,6 @@ func BinaryExpression(x *ast.BinaryExpr, m map[any]any) string {
 }
 
 func ForStatement(x *ast.ForStmt, m map[any]any) (string, string) {
-	// print(Expression(x.Cond, m))
 	return x.Init.(*ast.AssignStmt).Rhs[0].(*ast.BasicLit).Value, Expression(x.Cond, m)
 }
 
@@ -90,4 +89,8 @@ func AssignmentStatement(x *ast.AssignStmt, m map[any]any) {
 		v := Expression(rhs, m)
 		m[Expression(x.Lhs[lhs], m)] = v
 	}
+}
+
+func Statement(x ast.Stmt, m map[any]any) {
+	AssignmentStatement(x.(*ast.AssignStmt), m)
 }
