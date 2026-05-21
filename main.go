@@ -12,6 +12,7 @@ import (
 
 func main() {
 	var m = make(map[any]any)
+	var m_struct = make(map[*ast.Ident]ast.Expr)
 	src, err := os.ReadFile("example.txt")
 	if err != nil {
 		fmt.Println("Error:", err)
@@ -37,7 +38,6 @@ func main() {
 			if err != nil {
 				return false
 			}
-			fmt.Println(j)
 			for i := 0; i < j; i++ {
 				for stmt := range x.Body.List {
 					Statement(x.Body.List[stmt], m)
@@ -48,11 +48,17 @@ func main() {
 		case *ast.IfStmt:
 			v, _ := IfStatement(x, m)
 			m[x] = v
+		case *ast.StructType:
+			StructStatement(x, m_struct)
 		}
 		return true
 
 	})
 	for k, v := range m {
+		fmt.Printf("%v, %v", k, v)
+		fmt.Println()
+	}
+	for k, v := range m_struct {
 		fmt.Printf("%v, %v", k, v)
 		fmt.Println()
 	}

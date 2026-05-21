@@ -98,3 +98,11 @@ func Statement(x ast.Stmt, m map[any]any) {
 func IfStatement(x *ast.IfStmt, m map[any]any) (string, string) {
 	return x.Init.(*ast.AssignStmt).Rhs[0].(*ast.BasicLit).Value, Expression(x.Cond, m)
 }
+
+func StructStatement(x *ast.StructType, m_struct map[*ast.Ident]ast.Expr) {
+	for name := range x.Fields.List {
+		for v := range x.Fields.List[name].Names {
+			m_struct[x.Fields.List[name].Names[v]] = x.Fields.List[name].Type
+		}
+	}
+}
