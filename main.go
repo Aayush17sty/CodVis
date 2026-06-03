@@ -50,6 +50,8 @@ func main() {
 			m[x] = v
 		case *ast.StructType:
 			StructStatement(x, m_struct)
+		case *ast.MapType:
+			MapType(x, m)
 		}
 		return true
 

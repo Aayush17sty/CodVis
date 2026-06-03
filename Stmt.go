@@ -106,3 +106,9 @@ func StructStatement(x *ast.StructType, m_struct map[*ast.Ident]ast.Expr) {
 		}
 	}
 }
+
+func MapType(x *ast.MapType, m map[any]any) {
+	a := Expression(x.Key, m)
+	b := Expression(x.Value, m)
+	m[a] = b
+}
