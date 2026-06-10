@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -34,7 +33,9 @@ func main() {
 	if client == nil {
 		log.Fatal("could not connect to delve after retries")
 	}
-
+	client.CreateBreakpoint(&api.Breakpoint{
+		FunctionName: "main.main",
+	})
 	var snapshots []Snapshot
 
 	for {
@@ -63,5 +64,4 @@ func main() {
 			break
 		}
 	}
-	fmt.Println(snapshots)
 }
