@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
-	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	"github.com/go-delve/delve/service/api"
@@ -16,9 +17,6 @@ func main() {
 		"--listen=127.0.0.1:4040",
 		"/home/asty/CodVis/test/example.go",
 	)
-
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
 	cmd.Start()
 
 	var client *rpc2.RPCClient
@@ -36,11 +34,14 @@ func main() {
 	client.CreateBreakpoint(&api.Breakpoint{
 		FunctionName: "main.main",
 	})
-	var snapshots []Snapshot
 
+	<-client.Continue()
+	var snapshots []Snapshot
+	var nextState *api.DebuggerState
 	for {
 		state, _ := client.GetState()
 		line := state.CurrentThread.Line
+		funcName := state.CurrentThread.Function.Name()
 		locals, _ := client.ListLocalVariables(
 			api.EvalScope{GoroutineID: -1, Frame: 0},
 			api.LoadConfig{FollowPointers: true, MaxVariableRecurse: 3},
@@ -59,9 +60,15 @@ func main() {
 		}
 
 		snapshots = append(snapshots, snap)
-		nextState, _ := client.Next()
+		fmt.Println("currently at:", funcName, "line:", state.CurrentThread.Line)
+		if strings.HasPrefix(funcName, "main.") {
+			nextState, _ = client.Step()
+		} else {
+			nextState, _ = client.StepOut()
+		}
 		if nextState.Exited {
 			break
 		}
 	}
+	fmt.Println(snapshots)
 }
