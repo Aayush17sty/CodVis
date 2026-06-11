@@ -1,5 +1,7 @@
 package main
 
+import "go/ast"
+
 type Variable struct {
 	Name  string
 	Type  string
@@ -16,4 +18,9 @@ type Session struct {
 	Id        string
 	Snapshots []Snapshot
 	Current   int
+}
+
+type FunctionWrap struct {
+	Name       string
+	Parameters []*ast.Ident
 }

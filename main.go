@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os/exec"
 	"strings"
@@ -60,7 +59,7 @@ func main() {
 		}
 
 		snapshots = append(snapshots, snap)
-		fmt.Println("currently at:", funcName, "line:", state.CurrentThread.Line)
+		// fmt.Println("currently at:", funcName, "line:", state.CurrentThread.Line)
 		if strings.HasPrefix(funcName, "main.") {
 			nextState, _ = client.Step()
 		} else {
@@ -70,5 +69,6 @@ func main() {
 			break
 		}
 	}
-	fmt.Println(snapshots)
+	Wrapper()
+	// fmt.Println(snapshots)
 }
