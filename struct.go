@@ -1,7 +1,5 @@
 package main
 
-import "go/ast"
-
 type Variable struct {
 	Name  string
 	Type  string
@@ -22,6 +20,6 @@ type Session struct {
 
 type FunctionWrap struct {
 	Name           string
-	ParameterTypes []ast.Expr
+	ParameterTypes []string
 	Output         []string
 }

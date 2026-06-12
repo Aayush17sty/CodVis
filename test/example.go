@@ -2,9 +2,9 @@ package main
 
 import "fmt"
 
-func climbStairs(n int, s string) int {
+func climbStairs(n int, s string) (int, bool) {
 	if n <= 1 {
-		return 1
+		return 1, true
 	}
 
 	dp := make([]int, n+1)
@@ -15,12 +15,15 @@ func climbStairs(n int, s string) int {
 		dp[i] = dp[i-1] + dp[i-2]
 	}
 	fmt.Println(s)
-	return dp[n]
+	return dp[n], true
 }
 
 func main() {
 	n := 5
 	s := "Hello"
-	result := climbStairs(n, s)
+	result, val := climbStairs(n, s)
+	if val != true {
+		fmt.Println("Hello")
+	}
 	fmt.Println("Ways to climb", n, "stairs:", result)
 }
