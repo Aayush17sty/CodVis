@@ -9,8 +9,9 @@ import (
 	"os"
 )
 
+var Wrap FunctionWrap
+
 func Wrapper() {
-	var Wrap FunctionWrap
 	src, err := os.ReadFile("/home/asty/CodVis/test/example.go")
 	if err != nil {
 		fmt.Println("Error:", err)
@@ -27,11 +28,17 @@ func Wrapper() {
 			if x.Name.Name != "main" {
 				Wrap.Name = x.Name.Name
 				for i := range x.Type.Params.List {
-					Wrap.Parameters = x.Type.Params.List[i].Names
+					// fmt.Println(x.Type.Params.List[i].Names)
+					// // Wrap.Parameters = append(Wrap.Parameters, x.Type.Params.List[i].Names)
+					Wrap.ParameterTypes = append(Wrap.ParameterTypes, x.Type.Params.List[i].Type)
 				}
 			}
 		}
 		return true
 	})
 	fmt.Println(Wrap)
+}
+
+func MakeMainFunc() {
+
 }

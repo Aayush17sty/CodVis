@@ -21,6 +21,7 @@ type Session struct {
 }
 
 type FunctionWrap struct {
-	Name       string
-	Parameters []*ast.Ident
+	Name           string
+	ParameterTypes []ast.Expr
+	Output         []string
 }

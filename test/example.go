@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-func climbStairs(n int) int {
+func climbStairs(n int, s string) int {
 	if n <= 1 {
 		return 1
 	}
@@ -14,12 +14,13 @@ func climbStairs(n int) int {
 	for i := 2; i <= n; i++ {
 		dp[i] = dp[i-1] + dp[i-2]
 	}
-
+	fmt.Println(s)
 	return dp[n]
 }
 
 func main() {
 	n := 5
-	result := climbStairs(n)
+	s := "Hello"
+	result := climbStairs(n, s)
 	fmt.Println("Ways to climb", n, "stairs:", result)
 }
