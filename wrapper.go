@@ -12,6 +12,7 @@ import (
 )
 
 var Wrap FunctionWrap
+var Param Parameter
 
 func typeToString(fset *token.FileSet, expr ast.Expr) string {
 	var buf bytes.Buffer
@@ -36,8 +37,10 @@ func Wrapper() {
 			if x.Name.Name != "main" {
 				Wrap.Name = x.Name.Name
 				for _, param := range x.Type.Params.List {
+					Param.Name = param.Names[0].Name
 					typeStr := typeToString(fset, param.Type)
-					Wrap.ParameterTypes = append(Wrap.ParameterTypes, typeStr)
+					Param.Type = typeStr
+					Wrap.Parameters = append(Wrap.Parameters, Param)
 				}
 				for _, result := range x.Type.Results.List {
 					typeStr := typeToString(fset, result.Type)
@@ -51,5 +54,9 @@ func Wrapper() {
 }
 
 func MakeMainFunc() {
-
+	fmt.Sprintf(`
+		func main() {
+    	result := %s(%s)
+    	fmt.Println(result)
+	}`, Wrap.Name)
 }

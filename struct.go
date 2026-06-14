@@ -19,7 +19,12 @@ type Session struct {
 }
 
 type FunctionWrap struct {
-	Name           string
-	ParameterTypes []string
-	Output         []string
+	Name       string
+	Parameters []Parameter
+	Output     []string
+}
+
+type Parameter struct {
+	Name string
+	Type string
 }
