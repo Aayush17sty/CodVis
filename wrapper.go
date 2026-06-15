@@ -10,7 +10,6 @@ import (
 	"go/token"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -56,36 +55,15 @@ func Wrapper(userFunction string) {
 func ConvertValues(x string, v string) {
 	switch x {
 	case "int":
-		n, _ := strconv.Atoi(v)
-		Value.Value = append(Value.Value, n)
-	case "float64":
-		n, _ := strconv.ParseFloat(v, 64)
-		Value.Value = append(Value.Value, n)
-	case "string":
 		Value.Value = append(Value.Value, v)
+	case "float64":
+		Value.Value = append(Value.Value, v)
+	case "string":
+		Value.Value = append(Value.Value, fmt.Sprintf(`"%s"`, v))
 	case "bool":
-		n, _ := strconv.ParseBool(v)
-		Value.Value = append(Value.Value, n)
+		Value.Value = append(Value.Value, v)
 	}
 }
-
-// func MakeMainFunc() {
-// 	var s string
-// 	var parameters []string
-// 	scanner := bufio.NewScanner(os.Stdin)
-// 	if scanner.Scan() {
-// 		s = scanner.Text()
-// 	}
-// 	parameters = strings.Split(s, " ")
-// 	for i := range parameters {
-// 		ConvertValues(Wrap.Parameters[i].Type, parameters[i])
-// 	}
-// 	fmt.Sprintf(`
-// 		func main() {
-
-// 		}`)
-// }
-
 func ScanInput() []string {
 	var s string
 	var parameters []string
@@ -98,13 +76,13 @@ func ScanInput() []string {
 }
 
 func BuildMainFunction(userInputs []string, UserFunction string) string {
-	fmt.Println(userInputs)
 	var declarations []string
 	for i := range userInputs {
 		ConvertValues(Wrap.Parameters[i].Type, userInputs[i])
 	}
 	for i, param := range Wrap.Parameters {
-		declarations = append(declarations, fmt.Sprintf("\t%s := %s", param.Name, Value.Value[i]))
+		fmt.Println(Value.Value[i])
+		declarations = append(declarations, fmt.Sprintf("%s := %s", param.Name, Value.Value[i]))
 	}
 	var resultNames []string
 	for i := range Wrap.Output {
@@ -145,6 +123,5 @@ func BuildMainFunction(userInputs []string, UserFunction string) string {
 		functionCall,
 		strings.Join(prints, "\n"),
 	)
-	fmt.Println(fullFile)
 	return fullFile
 }
