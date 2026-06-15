@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
@@ -11,6 +12,15 @@ import (
 )
 
 func main() {
+	fileBytes, err := os.ReadFile("/home/asty/test/example.go")
+	if err != nil {
+		log.Fatal(err)
+	}
+	userFunction := string(fileBytes)
+	Wrapper(userFunction)
+	fullFile := BuildMainFunction(ScanInput(), userFunction)
+	os.MkdirAll("/home/asty/CodVis/test", 0755)
+	os.WriteFile("/home/asty/CodVis/test/example.go", []byte(fullFile), 0644)
 	cmd := exec.Command("dlv", "debug", "--headless",
 		"--api-version=2",
 		"--listen=127.0.0.1:4040",
@@ -69,6 +79,4 @@ func main() {
 			break
 		}
 	}
-	Wrapper()
-	// fmt.Println(snapshots)
 }

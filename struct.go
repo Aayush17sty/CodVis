@@ -28,3 +28,7 @@ type Parameter struct {
 	Name string
 	Type string
 }
+
+type Values struct {
+	Value []any
+}

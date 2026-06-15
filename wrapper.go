@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"go/ast"
@@ -9,10 +10,13 @@ import (
 	"go/token"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
 var Wrap FunctionWrap
 var Param Parameter
+var Value Values
 
 func typeToString(fset *token.FileSet, expr ast.Expr) string {
 	var buf bytes.Buffer
@@ -20,12 +24,8 @@ func typeToString(fset *token.FileSet, expr ast.Expr) string {
 	return buf.String()
 }
 
-func Wrapper() {
-	src, err := os.ReadFile("/home/asty/CodVis/test/example.go")
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
+func Wrapper(userFunction string) {
+	src := fmt.Sprintf("package main\n%s", userFunction)
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, "", src, parser.AllErrors)
 	if err != nil {
@@ -53,10 +53,98 @@ func Wrapper() {
 	fmt.Println(Wrap)
 }
 
-func MakeMainFunc() {
-	fmt.Sprintf(`
-		func main() {
-    	result := %s(%s)
-    	fmt.Println(result)
-	}`, Wrap.Name)
+func ConvertValues(x string, v string) {
+	switch x {
+	case "int":
+		n, _ := strconv.Atoi(v)
+		Value.Value = append(Value.Value, n)
+	case "float64":
+		n, _ := strconv.ParseFloat(v, 64)
+		Value.Value = append(Value.Value, n)
+	case "string":
+		Value.Value = append(Value.Value, v)
+	case "bool":
+		n, _ := strconv.ParseBool(v)
+		Value.Value = append(Value.Value, n)
+	}
+}
+
+// func MakeMainFunc() {
+// 	var s string
+// 	var parameters []string
+// 	scanner := bufio.NewScanner(os.Stdin)
+// 	if scanner.Scan() {
+// 		s = scanner.Text()
+// 	}
+// 	parameters = strings.Split(s, " ")
+// 	for i := range parameters {
+// 		ConvertValues(Wrap.Parameters[i].Type, parameters[i])
+// 	}
+// 	fmt.Sprintf(`
+// 		func main() {
+
+// 		}`)
+// }
+
+func ScanInput() []string {
+	var s string
+	var parameters []string
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		s = scanner.Text()
+	}
+	parameters = strings.Split(s, " ")
+	return parameters
+}
+
+func BuildMainFunction(userInputs []string, UserFunction string) string {
+	fmt.Println(userInputs)
+	var declarations []string
+	for i := range userInputs {
+		ConvertValues(Wrap.Parameters[i].Type, userInputs[i])
+	}
+	for i, param := range Wrap.Parameters {
+		declarations = append(declarations, fmt.Sprintf("\t%s := %s", param.Name, Value.Value[i]))
+	}
+	var resultNames []string
+	for i := range Wrap.Output {
+		resultNames = append(resultNames, fmt.Sprintf("result%d", i))
+	}
+	var paramNames []string
+	for _, param := range Wrap.Parameters {
+		paramNames = append(paramNames, param.Name)
+	}
+	var functionCall string
+	if len(resultNames) > 0 {
+		functionCall = fmt.Sprintf("\t%s := %s(%s)",
+			strings.Join(resultNames, ", "),
+			Wrap.Name,
+			strings.Join(paramNames, ", "),
+		)
+	} else {
+		functionCall = fmt.Sprintf("\t%s(%s)",
+			Wrap.Name,
+			strings.Join(paramNames, ", "),
+		)
+	}
+	var prints []string
+	for _, result := range resultNames {
+		prints = append(prints, fmt.Sprintf("\tfmt.Println(%s)", result))
+	}
+	fullFile := fmt.Sprintf(`
+	package main
+	import "fmt"
+	%s
+	func main() {
+		%s
+		%s
+		%s
+	}`,
+		UserFunction,
+		strings.Join(declarations, "\n"),
+		functionCall,
+		strings.Join(prints, "\n"),
+	)
+	fmt.Println(fullFile)
+	return fullFile
 }
