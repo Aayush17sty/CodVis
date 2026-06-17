@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -79,4 +80,5 @@ func main() {
 			break
 		}
 	}
+	fmt.Println(snapshots)
 }
