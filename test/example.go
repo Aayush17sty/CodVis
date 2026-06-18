@@ -16,7 +16,7 @@
 }
 	func main() {
 		n := 5
-s := "hey"
+s := "Hey"
 			result0, result1 := climbStairs(n, s)
 			fmt.Println(result0)
 	fmt.Println(result1)

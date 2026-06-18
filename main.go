@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/exec"
@@ -46,7 +45,7 @@ func main() {
 	})
 
 	<-client.Continue()
-	var snapshots []Snapshot
+	var Snapshots []Snapshot
 	var nextState *api.DebuggerState
 	for {
 		state, _ := client.GetState()
@@ -69,7 +68,7 @@ func main() {
 			snap.Callstack = append(snap.Callstack, f.Function.Name())
 		}
 
-		snapshots = append(snapshots, snap)
+		Snapshots = append(Snapshots, snap)
 		// fmt.Println("currently at:", funcName, "line:", state.CurrentThread.Line)
 		if strings.HasPrefix(funcName, "main.") {
 			nextState, _ = client.Step()
@@ -80,5 +79,5 @@ func main() {
 			break
 		}
 	}
-	fmt.Println(snapshots)
+	Initiate(Snapshots)
 }

@@ -1,21 +1,21 @@
 package main
 
 type Variable struct {
-	Name  string
-	Type  string
-	Value string
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Value string `json:"value"`
 }
 
 type Snapshot struct {
-	Line      int
-	Variables []Variable
-	Callstack []string
+	Line      int        `json:"line"`
+	Variables []Variable `json:"variables"`
+	Callstack []string   `json:"callstack"`
 }
 
 type Session struct {
-	Id        string
-	Snapshots []Snapshot
-	Current   int
+	Id        string     `json:"id"`
+	Snapshots []Snapshot `json:"snapshots"`
+	Current   int        `json:"current"`
 }
 
 type FunctionWrap struct {
@@ -31,4 +31,18 @@ type Parameter struct {
 
 type Values struct {
 	Value []any
+}
+
+type application struct {
+	config  config
+	session *Session
+}
+
+type config struct {
+	addr string
+	db   dbconfig
+}
+
+type dbconfig struct {
+	dsn string
 }

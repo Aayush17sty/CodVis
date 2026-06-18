@@ -1,26 +1,39 @@
 package main
 
-func getCurrent(session *Session) Snapshot {
-	return session.Snapshots[session.Current]
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
+
+func getCurrent(c *gin.Context, session *Session) {
+	c.JSON(http.StatusOK, session.Snapshots[session.Current])
 }
 
-func next(session *Session) Snapshot {
+func next(c *gin.Context, session *Session) {
 	if session.Current < len(session.Snapshots)-1 {
 		session.Current++
 	}
-	return session.Snapshots[session.Current]
+	c.JSON(http.StatusOK, session.Snapshots[session.Current])
 }
 
-func prev(session *Session) Snapshot {
+func prev(c *gin.Context, session *Session) {
 	if session.Current > 0 {
 		session.Current--
 	}
-	return session.Snapshots[session.Current]
+	c.JSON(http.StatusOK, session.Snapshots[session.Current])
 }
 
-func jump(session *Session, index int) Snapshot {
+func jump(c *gin.Context, session *Session) {
+	indexStr := c.Param("index")
+	index, err := strconv.Atoi(indexStr)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid index"})
+		return
+	}
 	if index >= 0 && index < len(session.Snapshots) {
 		session.Current = index
 	}
-	return session.Snapshots[session.Current]
+	c.JSON(http.StatusOK, session.Snapshots[session.Current])
 }
