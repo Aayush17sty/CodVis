@@ -13,6 +13,8 @@ func (app *application) mount() http.Handler {
 		c.String(http.StatusOK, "root.")
 	})
 
+	r.Static("/app", "./static")
+
 	r.GET("/current", func(c *gin.Context) {
 		getCurrent(c, app.session)
 	})
@@ -54,7 +56,6 @@ func Initiate(snapshots []Snapshot) {
 			Current:   0,
 		},
 	}
-
 	mux := api.mount()
 	log.Fatal(api.run(mux))
 }

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CodVis — Interactive Code Flow Visualizer for Go programs. Step through execution, inspect variables, and understand your code.">
+  <title>CodVis — Code Flow Visualizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Toast notifications -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Loading overlay -->
+  <div id="loading-overlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+  </div>
+
+  <div id="app">
+    <!-- ═══════════ TOP BAR ═══════════ -->
+    <header class="topbar" id="topbar">
+      <div class="topbar-section topbar-left">
+        <div class="logo">
+          <span class="logo-icon">◈</span>
+          <h1 class="logo-text">CodVis</h1>
+        </div>
+      </div>
+
+      <div class="topbar-section topbar-center">
+        <nav class="nav-group" aria-label="Step navigation">
+          <button id="btn-first" class="nav-btn" title="First step (Home)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+          </button>
+          <button id="btn-prev" class="nav-btn" title="Previous step (←)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="step-display" id="step-display">
+            <span class="step-label">STEP</span>
+            <span class="step-value" id="step-value">0</span>
+          </div>
+          <button id="btn-next" class="nav-btn nav-btn-primary" title="Next step (→)">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+          <button id="btn-last" class="nav-btn" title="Last step (End)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+          </button>
+        </nav>
+
+        <div class="jump-group">
+          <input type="number" id="jump-input" min="0" placeholder="Jump to…" class="jump-input" aria-label="Jump to step number">
+          <button id="btn-jump" class="jump-btn">Go</button>
+        </div>
+      </div>
+
+      <div class="topbar-section topbar-right">
+        <div class="line-badge" id="line-badge">
+          <span class="line-label">LINE</span>
+          <span class="line-value" id="line-value">—</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- ═══════════ MAIN CONTENT ═══════════ -->
+    <main class="content" id="content">
+      <!-- ——— Sidebar ——— -->
+      <aside class="sidebar" id="sidebar">
+        <!-- Call Stack Panel -->
+        <section class="panel callstack-panel" id="callstack-panel">
+          <div class="panel-header">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/></svg>
+            <h2>Call Stack</h2>
+          </div>
+          <div class="panel-body" id="callstack-body">
+            <div class="empty-state"><span class="empty-icon">⌀</span><span>No frames</span></div>
+          </div>
+        </section>
+
+        <!-- Keyboard Shortcuts Panel -->
+        <section class="panel shortcuts-panel">
+          <div class="panel-header">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></svg>
+            <h2>Shortcuts</h2>
+          </div>
+          <div class="panel-body">
+            <div class="shortcut-row"><kbd>←</kbd><span>Previous step</span></div>
+            <div class="shortcut-row"><kbd>→</kbd><span>Next step</span></div>
+            <div class="shortcut-row"><kbd>Home</kbd><span>First step</span></div>
+            <div class="shortcut-row"><kbd>End</kbd><span>Last known step</span></div>
+          </div>
+        </section>
+      </aside>
+
+      <!-- ——— Variables Area ——— -->
+      <section class="main-panel" id="main-panel">
+        <div class="panel variables-panel">
+          <div class="panel-header">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <h2>Variables</h2>
+            <span class="var-count" id="var-count">0</span>
+          </div>
+          <div class="panel-body variables-grid" id="variables-body">
+            <div class="empty-state full">
+              <span class="empty-icon large">◇</span>
+              <span class="empty-text">No variables in current scope</span>
+              <span class="empty-sub">Navigate to a step with local variables</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

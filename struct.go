@@ -1,10 +1,10 @@
 package main
 
 type Variable struct {
-	Name     string `json:"name"`
-	Type     string `json:"type"`
-	Value    string `json:"value"`
-	Children []Variable
+	Name     string     `json:"name"`
+	Type     string     `json:"type"`
+	Value    string     `json:"value"`
+	Children []Variable `json:"children"`
 }
 
 type Snapshot struct {

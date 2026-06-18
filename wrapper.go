@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
 	"go/ast"
@@ -8,6 +9,7 @@ import (
 	"go/printer"
 	"go/token"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -75,14 +77,13 @@ func ConvertValues(x string, v string) {
 	}
 }
 func ScanInput() []string {
-	// var s string
-	// var parameters []string
-	// scanner := bufio.NewScanner(os.Stdin)
-	// if scanner.Scan() {
-	// 	s = scanner.Text()
-	// }
-	// parameters = strings.Split(s, " ")
-	parameters := []string{"5", "Hey"}
+	var s string
+	var parameters []string
+	scanner := bufio.NewScanner(os.Stdin)
+	if scanner.Scan() {
+		s = scanner.Text()
+	}
+	parameters = strings.Split(s, " ")
 	return parameters
 }
 
