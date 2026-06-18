@@ -53,23 +53,36 @@ func main() {
 		funcName := state.CurrentThread.Function.Name()
 		locals, _ := client.ListLocalVariables(
 			api.EvalScope{GoroutineID: -1, Frame: 0},
-			api.LoadConfig{FollowPointers: true, MaxVariableRecurse: 3},
+			api.LoadConfig{
+				FollowPointers:     true,
+				MaxVariableRecurse: 3,
+				MaxStringLen:       512,
+				MaxArrayValues:     100,
+				MaxStructFields:    50,
+			},
 		)
 		frames, _ := client.Stacktrace(-1, 10, 0, 0, nil)
 		snap := Snapshot{Line: line}
 		for _, v := range locals {
-			snap.Variables = append(snap.Variables, Variable{
+			variable := Variable{
 				Name:  v.Name,
 				Value: v.Value,
 				Type:  v.Type,
-			})
+			}
+			for _, child := range v.Children {
+				variable.Children = append(variable.Children, Variable{
+					Name:  child.Name,
+					Value: child.Value,
+					Type:  child.Type,
+				})
+			}
+			snap.Variables = append(snap.Variables, variable)
 		}
 		for _, f := range frames {
 			snap.Callstack = append(snap.Callstack, f.Function.Name())
 		}
 
 		Snapshots = append(Snapshots, snap)
-		// fmt.Println("currently at:", funcName, "line:", state.CurrentThread.Line)
 		if strings.HasPrefix(funcName, "main.") {
 			nextState, _ = client.Step()
 		} else {

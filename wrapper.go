@@ -60,6 +60,18 @@ func ConvertValues(x string, v string) {
 		Value.Value = append(Value.Value, fmt.Sprintf(`"%s"`, v))
 	case "bool":
 		Value.Value = append(Value.Value, v)
+	case "[]int":
+		parts := strings.Split(v, " ")
+		Value.Value = append(Value.Value, fmt.Sprintf("[]int{%s}", strings.Join(parts, ", ")))
+	case "[]string":
+		parts := strings.Split(v, " ")
+		for i, p := range parts {
+			parts[i] = fmt.Sprintf(`"%s"`, p)
+		}
+		Value.Value = append(Value.Value, fmt.Sprintf("[]string{%s}", strings.Join(parts, ", ")))
+	case "[]float64":
+		parts := strings.Split(v, " ")
+		Value.Value = append(Value.Value, fmt.Sprintf("[]float64{%s}", strings.Join(parts, ", ")))
 	}
 }
 func ScanInput() []string {
