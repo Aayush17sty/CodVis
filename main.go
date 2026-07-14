@@ -24,9 +24,19 @@ func main() {
 	cmd := exec.Command("dlv", "debug", "--headless",
 		"--api-version=2",
 		"--listen=127.0.0.1:4040",
-		"/home/asty/CodVis/test/example.go",
+		".",
 	)
-	cmd.Start()
+	cmd.Dir = "/home/asty/CodVis/test"
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	if err := cmd.Start(); err != nil {
+		log.Fatal(err)
+	}
+	go func() {
+		if err := cmd.Wait(); err != nil {
+			log.Printf("delve exited: %v", err)
+		}
+	}()
 
 	var client *rpc2.RPCClient
 	for i := 0; i < 10; i++ {

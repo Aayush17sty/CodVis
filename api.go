@@ -15,6 +15,10 @@ func (app *application) mount() http.Handler {
 
 	r.Static("/app", "./static")
 
+	r.GET("/code", func(c *gin.Context) {
+		c.File("./test/example.go")
+	})
+
 	r.GET("/current", func(c *gin.Context) {
 		getCurrent(c, app.session)
 	})
